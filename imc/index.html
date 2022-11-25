@@ -1,0 +1,46 @@
+<?php
+
+include ("conexion/conexion.php");
+$imc=0;
+$nota="";
+$error="";
+
+if($_SERVER['REQUEST_METHOD']=='POST'){
+	$peso=$_POST['peso'];
+	$estatura=$_POST['estatura'];
+	if($peso==0||$estatura==0||$peso==''||$estatura==''){
+		$error="Introduce todos los campos";
+	}else{
+		$imc=$peso/pow($estatura,2);
+		$nota.="Peso: ".$peso."Estatura: ".$estatura." "; 
+			switch($imc) {
+			case $imc<18.5:
+				$nota.="Peso inferior al normal";
+				break;
+			case $imc>=18.5 && $imc<=24.9:
+				$nota.="Peso Normal";
+				break;
+			case $imc>=25:
+				$nota.="Peso superior al Normal";
+				break;
+		}
+
+			if ($error==''){
+	#Guardar datos
+	$insertar=$conexion->prepare('INSERT INTO
+	datos(peso,estatura,imc,nota) VALUES(:PESO,:ESTATURA,:IMC,:NOTA) ');
+
+	$insertar->execute(array(
+	':PESO'=>$peso,
+	':ESTATURA'=>$estatura,
+	':IMC'=>$imc,
+	':NOTA'=>$nota
+	));
+
+			}
+		}
+	}
+
+
+include "view/index_view.php"
+?>
